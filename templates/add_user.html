@@ -1,4 +1,3 @@
-
 {% extends 'base.html' %}
 
 {% block content %}
@@ -19,7 +18,6 @@
 </form>
 
 <table class="table table-dark">
-    {% for our_user in our_users %}
     <thead>
       <tr>
         <th scope="col">#</th>
@@ -32,6 +30,7 @@
     </thead>
     <tbody>
       <tr>
+        {% for our_user in our_users %}
         <th scope="row">--</th>
         <td>{{ our_user.id }}</td>
         <td>{{ our_user.name }}</td>
@@ -40,10 +39,11 @@
         <td>
           <a type="button" class="btn btn-info" href="#">See user</a>
           <a type="button" class="btn btn-warning" href="{{url_for('update',id = our_user.id)}}">Update user</a>
-          <a type="button" class="btn btn-danger" href="#">Delete user</a>
+          <a type="button" class="btn btn-danger" href="{{url_for('delete',id = our_user.id)}}">Delete user</a>
         </td>
       </tr>
+      {% endfor %}
     </tbody>
-    {% endfor %}
+    
 </table>
 {% endblock %}

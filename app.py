@@ -90,7 +90,7 @@ def update(id:int):
     form = UserForm()
     newname = Users.query.get_or_404(id)
     if request.method == "POST":
-        #DIFFERENT WAY OF GETTING THE FORM
+        #DIFFERENT WAY OF GETTING THE FORM DATA
         newname.name = request.form['name']
         newname.email = request.form['email']
         newname.favorite_color = request.form['favorite_color']
@@ -102,8 +102,26 @@ def update(id:int):
             flash("User not updated! (Error)")
             return render_template("update_user.html",form = form, newname = newname)
     else:
-        return render_template("update_user.html",form = form, newname = newname)
+        return render_template("update_user.html",form = form, newname = newname, id = id)
 #
+
+# Delete user
+@app.route('/delete/<int:id>')
+def delete(id:int):
+    usertodelete = Users.query.get_or_404(id)
+    name = None
+    form = NamerForm()
+    try:
+        db.session.delete(usertodelete)
+        db.session.commit()
+        flash("User deleted successfully!")
+        return redirect(url_for("add_user"))
+    except:
+        flash("User not deleted (Error)")
+        
+        return redirect(url_for("add_user"))
+#
+
 
 #Error handlers
 @app.errorhandler(404)
