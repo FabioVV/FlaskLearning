@@ -12,6 +12,9 @@
     {{ form.email.label(class="form-label") }}
     {{ form.email(class="form-control", value=newname.email) }}
 
+    {{ form.favorite_color.label(class="form-label") }}
+    {{ form.favorite_color(class="form-control", value=newname.favorite_color) }}
+
     {{ form.submit(class="btn btn-dark mb-3") }}
 </form>
 {% endblock %}
