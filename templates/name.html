@@ -3,12 +3,6 @@
 
 {% block content %}
 
-{% for message in get_flashed_messages() %}
-<div id="msg" class="alert alert-success" role="alert">
-    {{message}}
-</div>
-{% endfor %}
-
 {% if name %}
 <h1>Hello {{name}}!</h1>
 {% else %}

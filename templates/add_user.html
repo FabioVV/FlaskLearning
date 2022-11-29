@@ -23,6 +23,7 @@
         <th scope="col">ID</th>
         <th scope="col">Name</th>
         <th scope="col">Email</th>
+        <th scope="col">Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -31,6 +32,11 @@
         <td>{{ our_user.id }}</td>
         <td>{{ our_user.name }}</td>
         <td>@{{ our_user.email }}</td>
+        <td>
+          <a type="button" class="btn btn-info" href="#">See user</a>
+          <a type="button" class="btn btn-warning" href="{{url_for('update',id = our_user.id)}}">Update user</a>
+          <a type="button" class="btn btn-danger" href="#">Delete user</a>
+        </td>
       </tr>
     </tbody>
     {% endfor %}

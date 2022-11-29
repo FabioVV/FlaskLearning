@@ -5,9 +5,13 @@ from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+#SQLITE database
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:guerra998@localhost/users'
 db = SQLAlchemy(app)
 
 # User Model creation
@@ -33,6 +37,11 @@ class NamerForm(FlaskForm):
     submit = SubmitField("Submit")
 #
 
+
+
+## ROUTES AND CONTROLLERS BELlOW
+
+
 #Home page
 @app.route('/')
 def index():
@@ -51,7 +60,7 @@ def name():
     return render_template('name.html',name = name, form = form)
 #
 
-#User addapp.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+#Add user
 @app.route('/user/add', methods=['GET','POST'])
 def add_user():
     name = None
@@ -68,6 +77,26 @@ def add_user():
         flash("User created!")
     our_users = Users.query.order_by(Users.date_added)
     return render_template("add_user.html",form = form, name = name, our_users = our_users)
+#
+
+#Update user
+@app.route('/update/<int:id>', methods=['GET','POST'])
+def update(id:int):
+    form = UserForm()
+    newname = Users.query.get_or_404(id)
+    if request.method == "POST":
+        #DIFFERENT WAY OF GETTING THE FORM
+        newname.name = request.form['name']
+        newname.email = request.form['email']
+        try:
+            db.session.commit()
+            flash("User updated successfully!")
+            return render_template("update_user.html",form = form, newname = newname)
+        except:
+            flash("User not updated! (Error)")
+            return render_template("update_user.html",form = form, newname = newname)
+    else:
+        return render_template("update_user.html",form = form, newname = newname)
 #
 
 #Error handlers

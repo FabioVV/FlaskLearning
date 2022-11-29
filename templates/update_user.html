@@ -1,0 +1,17 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Update user: </h1>
+<form action="/update/{{newname.id}}" method="post">
+    {{ form.hidden_tag() }}
+
+    {{ form.name.label(class="form-label") }}
+    {{ form.name(class="form-control", value=newname.name) }}
+
+    {{ form.email.label(class="form-label") }}
+    {{ form.email(class="form-control", value=newname.email) }}
+
+    {{ form.submit(class="btn btn-dark mb-3") }}
+</form>
+{% endblock %}
