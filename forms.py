@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField
 from wtforms import StringField, SubmitField, PasswordField, BooleanField, EmailField, ValidationError, TextAreaField
 from wtforms.widgets import TextArea
 from wtforms.validators import DataRequired, equal_to, length
@@ -9,6 +10,7 @@ class UserForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
     email = StringField("Email", validators=[DataRequired()])
     username = StringField("Username", validators=[DataRequired()])
+    profile_pic = FileField("Profile Image")
 
     password_hash = PasswordField("Password",validators=[DataRequired(),equal_to('password_hash2', message='Password have to match!')])
     password_hash2 = PasswordField("Confirm password", validators=[DataRequired()])

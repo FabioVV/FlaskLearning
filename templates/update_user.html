@@ -4,7 +4,7 @@
 {% block content %}
 <h1>Update user: </h1>
 {% if current_user.id == id %}
-<form action="/update/{{newname.id}}" method="post">
+<form action="/update/{{newname.id}}" method="post" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
 
     {{ form.name.label(class="form-label") }}
@@ -18,6 +18,9 @@
 
     {{ form.favorite_color.label(class="form-label") }}
     {{ form.favorite_color(class="form-control", value=newname.about) }}
+
+    {{ form.profile_pic.label(class="form-label") }}
+    {{ form.profile_pic(class="form-control", value=newname.profile_pic) }}
 
     {{ form.about.label(class="form-label") }}
     <textarea name="about" class="form-control">

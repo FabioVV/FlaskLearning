@@ -1,15 +1,16 @@
 from flask import (Flask, flash, redirect, render_template, request, session, url_for)
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
+import uuid as uuid
 from flask_login import LoginManager, login_required, logout_user, current_user, login_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from datetime import datetime
-from werkzeug.security import generate_password_hash, check_password_hash
-from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from datetime import date
 from forms import UserForm, LoginForm, PostForm, NamerForm, SearchForm
 from flask_ckeditor import CKEditor
+import os
 
 app = Flask(__name__)
 ckeditor = CKEditor(app)
@@ -19,9 +20,8 @@ app.secret_key = "supersecretkey"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:guerra998@localhost/users'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-
-
-
+UPLOAD_FOLDER = 'static'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
 #Login Stuffs
@@ -141,8 +141,19 @@ def update(id:int):
         newname.username = request.form['username']
         newname.favorite_color = request.form['favorite_color']
         newname.about = request.form['about']
+        newname.profile_pic = request.files['profile_pic']
+      
+        #Grab image name
+        picfilename = secure_filename(newname.profile_pic.filename)
+        # set uuid
+        picname = str(uuid.uuid1()) + "_" + picfilename
+        newname.profile_pic = picname
+        #SAVE IMAGE
+        saver = request.files['profile_pic']
+        
         try:
             db.session.commit()
+            saver.save(os.path.join(app.config['UPLOAD_FOLDER'], picname))
             flash("User updated successfully!")
             return render_template("update_user.html",form = form, newname = newname)
         except:
@@ -157,15 +168,18 @@ def update(id:int):
 @login_required
 def delete(id:int):
     usertodelete = Users.query.get_or_404(id)
-
-    try:
-        db.session.delete(usertodelete)
-        db.session.commit()
-        flash("User deleted successfully!")
-        return redirect(url_for("add_user"))
-    except:
-        flash("User not deleted (Error)")
-        return redirect(url_for("add_user"))
+    if current_user.id == id:
+        try:
+            db.session.delete(usertodelete)
+            db.session.commit()
+            flash("User deleted successfully!")
+            return redirect(url_for("add_user"))
+        except:
+            flash("User not deleted (Error)")
+            return redirect(url_for("add_user"))
+    else:
+        flash("User not deleted (Unauthorized action)")
+        return redirect(url_for("dashboard"))
 #
 
 # Show all posts
@@ -315,6 +329,7 @@ class Users(db.Model, UserMixin):
     favorite_color = db.Column(db.String(120))
     about = db.Column(db.Text(75),nullable=True)
     password_hash = db.Column(db.String(128))
+    profile_pic = db.Column(db.String(300), nullable=True)
     date_added = db.Column(db.DateTime, default = datetime.utcnow)
 
     post_count = db.relationship('Posts', backref='poster')
