@@ -5,7 +5,11 @@
 <hr>
 
 <div class="card" style="width: 18rem;">
-    <img src="{{url_for('static',filename='default.jpg')}}" class="card-img-top" alt="...">
+    {% if current_user.profile_pic %}
+    <img src="{{url_for('static',filename='current_user.profile_pic')}}" class="card-img-top" alt="Profile image">
+    {% else %}
+    <img src="{{url_for('static',filename='default.jpg')}}" class="card-img-top" alt="Profile image">
+    {% endif %}
     <div class="card-body">
       <h5 class="card-title">{{current_user.name}}</h5>
       <p class="card-text">Your user information.</p>

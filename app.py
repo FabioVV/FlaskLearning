@@ -155,10 +155,10 @@ def update(id:int):
             db.session.commit()
             saver.save(os.path.join(app.config['UPLOAD_FOLDER'], picname))
             flash("User updated successfully!")
-            return render_template("update_user.html",form = form, newname = newname)
+            return render_template("update_user.html",form = form, newname = newname, id = id)
         except:
             flash("User not updated! (Error)")
-            return render_template("update_user.html",form = form, newname = newname)
+            return render_template("update_user.html",form = form, newname = newname, id = id)
     else:
         return render_template("update_user.html",form = form, newname = newname, id = id)
 #
