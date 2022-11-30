@@ -1,0 +1,40 @@
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField, PasswordField, BooleanField, EmailField, ValidationError
+from wtforms.widgets import TextArea
+from wtforms.validators import DataRequired, equal_to, length
+
+# User Form
+class UserForm(FlaskForm):
+    name = StringField("Name", validators=[DataRequired()])
+    email = StringField("Email", validators=[DataRequired()])
+    username = StringField("Username", validators=[DataRequired()])
+
+    password_hash = PasswordField("Password",validators=[DataRequired(),equal_to('password_hash2', message='Password have to match!')])
+    password_hash2 = PasswordField("Confirm password", validators=[DataRequired()])
+
+    favorite_color = StringField("Favorite color")
+
+    submit = SubmitField("Submit")
+#
+
+# Create a Form Class
+class NamerForm(FlaskForm):
+    name = StringField("What's your name?", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+#
+
+# Create Posts Class
+class PostForm(FlaskForm):
+    title = StringField("Title", validators=[DataRequired()])
+    content = StringField("Content", validators=[DataRequired()], widget=TextArea())
+    author = StringField("Author", validators=[DataRequired()])
+    slug = StringField("Slug", validators=[DataRequired()])
+    submit = SubmitField('Submit')
+#
+
+# Create login Class
+class LoginForm(FlaskForm):
+    username = StringField("Username", validators=[DataRequired()])
+    password = PasswordField("Password", validators=[DataRequired()])
+    submit = SubmitField('Submit')
+#

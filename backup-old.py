@@ -1,28 +1,108 @@
 from flask import (Flask, flash, redirect, render_template, request, session, url_for)
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import LoginManager, login_required, logout_user, current_user, login_user
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField, PasswordField, BooleanField, EmailField, ValidationError
+from wtforms.widgets import TextArea
+from wtforms.validators import DataRequired, equal_to, length
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin
+from flask_login import UserMixin, LoginManager, login_required, logout_user, current_user, login_user
 from datetime import date
-from forms import UserForm, LoginForm, PostForm, NamerForm
+
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
 #SQLITE database
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:guerra998@localhost/users'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 
+# Blog post model creation
+class Posts(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    title = db.Column(db.String(50))
+    content = db.Column(db.Text)
+    author = db.Column(db.String(75))
+    slug = db.Column(db.String(100))
+    date_posted = db.Column(db.DateTime, default = datetime.utcnow)
+#
+
+# User Model creation
+class Users(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key = True)
+    username = db.Column(db.String(20), nullable=False, unique=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), nullable=False, unique = True)
+    favorite_color = db.Column(db.String(120))
+    password_hash = db.Column(db.String(128))
+    date_added = db.Column(db.DateTime, default = datetime.utcnow)
+
+    @property
+    def password(self):
+        raise AttributeError('Password is not a readable attribute.')
+
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def __repr__(self) -> str:
+        return '<Name %r>' % self.name
+#
+
+
+# User Form
+class UserForm(FlaskForm):
+    name = StringField("Name", validators=[DataRequired()])
+    email = StringField("Email", validators=[DataRequired()])
+    username = StringField("Username", validators=[DataRequired()])
+
+    password_hash = PasswordField("Password",validators=[DataRequired(),equal_to('password_hash2', message='Password have to match!')])
+    password_hash2 = PasswordField("Confirm password", validators=[DataRequired()])
+
+    favorite_color = StringField("Favorite color")
+
+    submit = SubmitField("Submit")
+#
+
+# Create a Form Class
+class NamerForm(FlaskForm):
+    name = StringField("What's your name?", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+#
+
+# Create Posts Class
+class PostForm(FlaskForm):
+    title = StringField("Title", validators=[DataRequired()])
+    content = StringField("Content", validators=[DataRequired()], widget=TextArea())
+    author = StringField("Author", validators=[DataRequired()])
+    slug = StringField("Slug", validators=[DataRequired()])
+    submit = SubmitField('Submit')
+#
+
+# Create login Class
+class LoginForm(FlaskForm):
+    username = StringField("Username", validators=[DataRequired()])
+    password = PasswordField("Password", validators=[DataRequired()])
+    submit = SubmitField('Submit')
+#
+
+#JSON
+@app.route('/date')
+def getdate():
+    return {"Date": date.today()}
+#
 
 
 
-#Login Stuffs
+#Login Stuff
 loginmanager = LoginManager()
 loginmanager.init_app(app)
 loginmanager.login_view = 'login'
@@ -32,11 +112,6 @@ def load_user(userid):
     return Users.query.get(int(userid))
 #
 
-#JSON
-@app.route('/date')
-def getdate():
-    return {"Date": date.today()}
-#
 
 
 ## ROUTES AND CONTROLLERS BELlOW
@@ -249,44 +324,5 @@ def page_not_found(e):
 #
 
 
-
-
-
-# MODELS BELLOW
-
-# Blog post model creation
-class Posts(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    title = db.Column(db.String(50))
-    content = db.Column(db.Text)
-    author = db.Column(db.String(75))
-    slug = db.Column(db.String(100))
-    date_posted = db.Column(db.DateTime, default = datetime.utcnow)
-#
-
-# User Model creation
-class Users(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key = True)
-    username = db.Column(db.String(20), nullable=False, unique=True)
-    name = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(120), nullable=False, unique = True)
-    favorite_color = db.Column(db.String(120))
-    password_hash = db.Column(db.String(128))
-    date_added = db.Column(db.DateTime, default = datetime.utcnow)
-
-    @property
-    def password(self):
-        raise AttributeError('Password is not a readable attribute.')
-
-    @password.setter
-    def password(self, password):
-        self.password_hash = generate_password_hash(password)
-
-    def verify_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
-    def __repr__(self) -> str:
-        return '<Name %r>' % self.name
-#
 if __name__ == "__main__":
     app.run("0.0.0.0", port=5002, debug=True)

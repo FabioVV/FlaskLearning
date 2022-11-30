@@ -3,11 +3,15 @@
 
 {% block content %}
 <h1>Update user: </h1>
+{% if current_user.id == id %}
 <form action="/update/{{newname.id}}" method="post">
     {{ form.hidden_tag() }}
 
     {{ form.name.label(class="form-label") }}
     {{ form.name(class="form-control", value=newname.name) }}
+
+    {{ form.username.label(class="form-label") }}
+    {{ form.username(class="form-control", value=newname.username) }}
 
     {{ form.email.label(class="form-label") }}
     {{ form.email(class="form-control", value=newname.email) }}
@@ -19,4 +23,8 @@
 
     <a type="button" class="btn btn-danger" href="{{url_for('delete',id = id)}}">Delete user</a>
 </form>
+{% else %}
+<h1 class="display-3">You can't edit this user.</h1>
+<p>Reason: Access denied.</p>
+{% endif %}
 {% endblock %}
