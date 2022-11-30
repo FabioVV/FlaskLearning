@@ -4,3 +4,15 @@
     flex-wrap: wrap;
     flex-grow: 1;
 }
+.btn.btn-dark{
+    float: right;
+    margin-right: 10px;
+}
+.btn.btn-warning{
+    float: right;
+    margin-right: 10px;
+}
+.btn.btn-danger{
+    float: right;
+    margin-right: 10px;
+}

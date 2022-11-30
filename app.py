@@ -171,7 +171,6 @@ def delete(id:int):
         return redirect(url_for("add_user"))
     except:
         flash("User not deleted (Error)")
-        
         return redirect(url_for("add_user"))
 #
 
@@ -194,12 +193,58 @@ def add_post():
     return render_template('add_post.html', form = form)
 #
 
-# Show posts
+# Show all posts
 @app.route('/posts')
 def posts():
     # grab all posts from the database
-    posts = Posts.query.order_by(Posts.date_posted)
+    posts = Posts.query.order_by(Posts.date_posted)   
     return render_template('posts.html', posts = posts)
+#
+# Show individual postposts
+@app.route('/posts/<int:id>')
+def post(id):
+    # grab all posts from the database
+    post = Posts.query.get_or_404(id)
+    return render_template('post.html', post = post)
+#
+
+# Edit posts
+@app.route('/posts/edit/<int:id>', methods=['GET','POST'])
+def edit_post(id):
+    post = Posts.query.get_or_404(id) 
+    form = PostForm()
+
+    if form.validate_on_submit():
+        post.title = form.title.data
+        post.content = form.content.data
+        post.author = form.author.data
+        post.slug = form.slug.data
+
+        #update database
+        db.session.add(post)
+        db.session.commit()
+        flash("Post has been updated.")
+        return redirect(url_for('post', id = post.id))
+
+    form.title.data = post.title
+    form.content.data = post.content
+    form.author.data = post.author
+    form.slug.data = post.slug
+    return render_template('edit_post.html', form = form)
+#
+
+# Delete post
+@app.route('/posts/delete/<int:id>')
+def post_delete(id):
+    posttodelete = Posts.query.get_or_404(id)
+    try:
+        db.session.delete(posttodelete)
+        db.session.commit()
+        flash("Post deleted!")
+        return redirect(url_for("posts"))
+    except:
+        flash("Post not deleted. (Error)")
+        return redirect(url_for("posts"))
 #
 
 #Error handlers
