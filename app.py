@@ -164,6 +164,14 @@ def delete(id:int):
         return redirect(url_for("add_user"))
 #
 
+# Show all posts
+@app.route('/posts')
+def posts():
+    # grab all posts from the database
+    posts = Posts.query.order_by(Posts.date_posted)   
+    return render_template('posts.html', posts = posts)
+#
+
 # Add post page
 @app.route('/add-post', methods=['GET','POST'])
 @login_required
@@ -171,11 +179,12 @@ def add_post():
     form = PostForm()
 
     if form.validate_on_submit():
-        post = Posts(title = form.title.data, content = form.content.data, author = form.author.data, slug = form.slug.data)
+        poster = current_user.id
+        post = Posts(title = form.title.data, content = form.content.data, slug = form.slug.data, poster_id = poster)
+
         # Clear the form
         form.title.data = ''
         form.content.data = ''
-        form.author.data = ''
         form.slug.data = ''
 
         db.session.add(post)
@@ -184,13 +193,6 @@ def add_post():
     return render_template('add_post.html', form = form)
 #
 
-# Show all posts
-@app.route('/posts')
-def posts():
-    # grab all posts from the database
-    posts = Posts.query.order_by(Posts.date_posted)   
-    return render_template('posts.html', posts = posts)
-#
 # Show individual postposts
 @app.route('/posts/<int:id>')
 @login_required
@@ -209,7 +211,6 @@ def edit_post(id):
     if form.validate_on_submit():
         post.title = form.title.data
         post.content = form.content.data
-        post.author = form.author.data
         post.slug = form.slug.data
 
         #update database
@@ -220,7 +221,6 @@ def edit_post(id):
 
     form.title.data = post.title
     form.content.data = post.content
-    form.author.data = post.author
     form.slug.data = post.slug
     return render_template('edit_post.html', form = form)
 #
@@ -248,10 +248,6 @@ def page_not_found(e):
     return render_template("500.html"), 500
 #
 
-
-
-
-
 # MODELS BELLOW
 
 # Blog post model creation
@@ -259,9 +255,10 @@ class Posts(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     title = db.Column(db.String(50))
     content = db.Column(db.Text)
-    author = db.Column(db.String(75))
     slug = db.Column(db.String(100))
     date_posted = db.Column(db.DateTime, default = datetime.utcnow)
+    
+    poster_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 #
 
 # User Model creation
@@ -273,6 +270,8 @@ class Users(db.Model, UserMixin):
     favorite_color = db.Column(db.String(120))
     password_hash = db.Column(db.String(128))
     date_added = db.Column(db.DateTime, default = datetime.utcnow)
+
+    post_count = db.relationship('Posts', backref='poster')
 
     @property
     def password(self):

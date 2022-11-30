@@ -10,7 +10,7 @@
         <hr>
         <p>{{p.content}}</p>
         <sub style="display: none;">{{p.slug}}</sub>
-        <sub >By: {{p.author}}</sub>
+        <sub >By: {{p.poster.name}}</sub>
         <sub >Posted on: {{p.date_posted}}</sub>
         <a type="button" class="btn btn-dark" href="{{ url_for('post', id = p.id) }}">See post</a>
         <a type="button" class="btn btn-warning" href="{{ url_for('edit_post', id = p.id) }}">Edit post</a>
