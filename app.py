@@ -140,6 +140,7 @@ def update(id:int):
         newname.email = request.form['email']
         newname.username = request.form['username']
         newname.favorite_color = request.form['favorite_color']
+        newname.about = request.form['about']
         try:
             db.session.commit()
             flash("User updated successfully!")
@@ -268,8 +269,9 @@ def search():
 @login_required
 def admin():
     id = current_user.id
+    users = Users.query.order_by(Users.date_added)
     if id == 18:
-        return render_template("admin.html")
+        return render_template("admin.html", users = users)
     else:
         flash("Unauthorized access.")
         return redirect(url_for('dashboard'))

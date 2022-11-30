@@ -14,6 +14,7 @@
         <sub>By: {{post.poster.name}}</sub>
         <sub>Posted on: {{post.date_posted}}</sub>
     </div>
+    <p>{{post.about}}</p>
 </div>
 <a type="button" class="btn btn-dark" href="{{ url_for('posts') }}">Return to posts</a>
 {% if current_user.id == post.poster.id%}

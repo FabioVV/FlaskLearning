@@ -17,7 +17,12 @@
     {{ form.email(class="form-control", value=newname.email) }}
 
     {{ form.favorite_color.label(class="form-label") }}
-    {{ form.favorite_color(class="form-control", value=newname.favorite_color) }}
+    {{ form.favorite_color(class="form-control", value=newname.about) }}
+
+    {{ form.about.label(class="form-label") }}
+    <textarea name="about" class="form-control">
+        {{ newname.about }}
+    </textarea>
 
     {{ form.submit(class="btn btn-dark mb-3") }}
 
