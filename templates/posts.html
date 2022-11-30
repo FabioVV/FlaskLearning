@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="display-1" >All posts</h1>
+
+{%for p in posts%}
+<div class="shadow p-3 mb-5 bg-body" id="posts">
+    <div class="postcontent">
+        <h3 class="display-4" >{{p.title}}</h3>
+        <hr>
+        <p>{{p.content}}</p>
+        <sub style="display: none;">{{p.slug}}</sub>
+        <sub>By: {{p.author}}</sub>
+        <sub>Posted on: {{p.date_posted}}</sub>
+    </div>
+    
+</div>
+{%endfor%}
+{% endblock %}

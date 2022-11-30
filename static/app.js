@@ -2,4 +2,4 @@ setTimeout(
     () =>{
         document.getElementById("msg").remove()
     }
-,2000)
+,3000)

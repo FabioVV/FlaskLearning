@@ -11,6 +11,13 @@
     {{ form.email.label(class="form-label") }}
     {{ form.email(class="form-control") }}
 
+    {{ form.password_hash.label(class="form-label") }}
+    {{ form.password_hash(class="form-control") }}
+
+    {{ form.password_hash2.label(class="form-label") }}
+    {{ form.password_hash2(class="form-control") }}
+
+
     {{ form.favorite_color.label(class="form-label") }}
     {{ form.favorite_color(class="form-control") }}
 
@@ -24,6 +31,7 @@
         <th scope="col">ID</th>
         <th scope="col">Name</th>
         <th scope="col">Email</th>
+        <th scope="col">Password</th>
         <th scope="col">Favorite color</th>
         <th scope="col">Actions</th>
       </tr>
@@ -35,6 +43,7 @@
         <td>{{ our_user.id }}</td>
         <td>{{ our_user.name }}</td>
         <td>@{{ our_user.email }}</td>
+        <td class="pass">{{ our_user.password_hash }}</td>
         <td>{{ our_user.favorite_color }}</td>
         <td>
           <a type="button" class="btn btn-info" href="#">See user</a>
