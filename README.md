@@ -25,6 +25,8 @@ Flask-Migrate
 
 flask_login
 
+flask-ckeditor
+
 MySql database
 
 

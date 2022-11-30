@@ -8,9 +8,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from datetime import date
-from forms import UserForm, LoginForm, PostForm, NamerForm
+from forms import UserForm, LoginForm, PostForm, NamerForm, SearchForm
+from flask_ckeditor import CKEditor
 
 app = Flask(__name__)
+ckeditor = CKEditor(app)
 app.secret_key = "supersecretkey"
 #SQLITE database
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
@@ -128,6 +130,7 @@ def add_user():
 
 #Update user
 @app.route('/update/<int:id>', methods=['GET','POST'])
+@login_required
 def update(id:int):
     form = UserForm()
     newname = Users.query.get_or_404(id)
@@ -150,10 +153,10 @@ def update(id:int):
 
 # Delete user
 @app.route('/delete/<int:id>')
+@login_required
 def delete(id:int):
     usertodelete = Users.query.get_or_404(id)
-    name = None
-    form = NamerForm()
+
     try:
         db.session.delete(usertodelete)
         db.session.commit()
@@ -204,39 +207,61 @@ def post(id):
 
 # Edit posts
 @app.route('/posts/edit/<int:id>', methods=['GET','POST'])
+@login_required
 def edit_post(id):
     post = Posts.query.get_or_404(id) 
     form = PostForm()
+    if current_user.id == post.poster.id:
+        if form.validate_on_submit():
+            post.title = form.title.data
+            post.content = form.content.data
+            post.slug = form.slug.data
 
-    if form.validate_on_submit():
-        post.title = form.title.data
-        post.content = form.content.data
-        post.slug = form.slug.data
+            #update database
+            db.session.add(post)
+            db.session.commit()
+            flash("Post has been updated.")
+            return redirect(url_for('post', id = post.id))
 
-        #update database
-        db.session.add(post)
-        db.session.commit()
-        flash("Post has been updated.")
-        return redirect(url_for('post', id = post.id))
-
-    form.title.data = post.title
-    form.content.data = post.content
-    form.slug.data = post.slug
-    return render_template('edit_post.html', form = form)
+        form.title.data = post.title
+        form.content.data = post.content
+        form.slug.data = post.slug
+        return render_template('edit_post.html', form = form)
+    else:
+        flash("Access denied.")
+        return redirect(url_for('posts'))
 #
 
 # Delete post
 @app.route('/posts/delete/<int:id>')
+@login_required
 def post_delete(id):
     posttodelete = Posts.query.get_or_404(id)
-    try:
-        db.session.delete(posttodelete)
-        db.session.commit()
-        flash("Post deleted!")
+    if current_user.id == posttodelete.poster.id:
+        try:
+            db.session.delete(posttodelete)
+            db.session.commit()
+            flash("Post deleted!")
+            return redirect(url_for("posts"))
+        except:
+            flash("Post not deleted. (Error)")
+            return redirect(url_for("posts"))
+    else:
+        flash("Access denied. (Unauthorized action)")
         return redirect(url_for("posts"))
-    except:
-        flash("Post not deleted. (Error)")
-        return redirect(url_for("posts"))
+#
+
+# Search function
+@app.route('/search', methods=['POST'])
+def search():
+    form = SearchForm()
+    post_s = Posts.query 
+    if form.validate_on_submit():
+        post_searched = form.searched.data
+        post_s = post_s.filter(Posts.content.like('%' + post_searched + '%'))
+        post_s = post_s.order_by(Posts.title).all()
+        return render_template("search.html", searched = post_s)
+
 #
 
 #Error handlers
@@ -246,6 +271,13 @@ def page_not_found(e):
 @app.errorhandler(500)
 def page_not_found(e):
     return render_template("500.html"), 500
+#
+
+#
+@app.context_processor
+def base():
+    form = SearchForm()
+    return dict(form = form)
 #
 
 # MODELS BELLOW
