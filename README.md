@@ -23,6 +23,8 @@ flask-wtf
 
 Flask-Migrate
 
+flask_login
+
 MySql database
 
 

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Login</h1>
+<form method="post">
+    {{ form.hidden_tag() }}
+
+    {{ form.title.label(class="form-label") }}
+    {{ form.title(class="form-control") }}
+
+    {{ form.author.label(class="form-label") }}
+    {{ form.author(class="form-control") }}
+
+    {{ form.submit(class="btn btn-dark mb-3") }}
+</form>
+
+{% endblock %}

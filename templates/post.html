@@ -15,7 +15,9 @@
         <sub>Posted on: {{post.date_posted}}</sub>
     </div>
 </div>
+<a type="button" class="btn btn-dark" href="{{ url_for('posts') }}">Return to posts</a>
 <a type="button" class="btn btn-warning" href="{{ url_for('edit_post', id = post.id) }}">Edit post</a>
 <a type="button" class="btn btn-danger" href="{{url_for('post_delete',id = post.id)}}">Delete post</a>
-<a type="button" class="btn btn-dark" href="{{ url_for('posts') }}">Return to posts</a>
+
+
 {% endblock %}
