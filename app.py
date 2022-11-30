@@ -261,7 +261,18 @@ def search():
         post_s = post_s.filter(Posts.content.like('%' + post_searched + '%'))
         post_s = post_s.order_by(Posts.title).all()
         return render_template("search.html", searched = post_s)
+#
 
+# Admin function
+@app.route('/admin')
+@login_required
+def admin():
+    id = current_user.id
+    if id == 18:
+        return render_template("admin.html")
+    else:
+        flash("Unauthorized access.")
+        return redirect(url_for('dashboard'))
 #
 
 #Error handlers
@@ -273,7 +284,7 @@ def page_not_found(e):
     return render_template("500.html"), 500
 #
 
-#
+# Passando para o base.html o form, para que o WTF que foi colocado no NAV funcione, (base includes nav)
 @app.context_processor
 def base():
     form = SearchForm()

@@ -33,6 +33,18 @@
               {%endif%}
             </ul>
           </li>
+
+          {%if current_user.id == 18 %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Admin actions
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{{url_for('admin')}}">Admin dashboard</a></li>
+              <li><hr class="dropdown-divider"></li>
+            </ul>
+          </li>
+          {%endif%}
         </ul>
         <form action="{{url_for('search')}}" method="POST" class="d-flex" role="search">
           {{ form.hidden_tag() }}
