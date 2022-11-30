@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Dashboard</h1>
+<hr>
+
+<div class="card" style="width: 18rem;">
+    <img src="..." class="card-img-top" alt="...">
+    <div class="card-body">
+      <h5 class="card-title">{{current_user.name}}</h5>
+      <p class="card-text">Your user information.</p>
+    </div>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item"><strong>Username:</strong> {{current_user.username}}</li>
+      <li class="list-group-item"><strong>Email:</strong> {{current_user.email}}</li>
+      <li class="list-group-item"><strong>User id:</strong> {{current_user.id}}</li>
+      <li class="list-group-item"><strong>Date Joined:</strong> {{current_user.date_added}}</li>
+    </ul>
+  </div>
+
+  <a class="btn btn-danger" href="{{url_for('delete',id = current_user.id)}}">Delete your profile</a>
+  <a class="btn btn-warning" href="{{url_for('update',id = current_user.id)}}">Update your profile info</a>
+  
+{% endblock %}

@@ -1,4 +1,4 @@
-from flask import (Flask, flash, redirect, render_template, request, session,url_for)
+from flask import (Flask, flash, redirect, render_template, request, session, url_for)
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, BooleanField, EmailField, ValidationError
 from wtforms.widgets import TextArea
@@ -7,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin, login_manager, login_required, logout_user, current_user, login_user
+from flask_login import UserMixin, LoginManager, login_required, logout_user, current_user, login_user
 from datetime import date
 
 
@@ -16,9 +16,11 @@ app.secret_key = "supersecretkey"
 #SQLITE database
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:guerra998@localhost/users'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
 
 # Blog post model creation
 class Posts(db.Model):
@@ -60,6 +62,7 @@ class Users(db.Model, UserMixin):
 class UserForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
     email = StringField("Email", validators=[DataRequired()])
+    username = StringField("Username", validators=[DataRequired()])
 
     password_hash = PasswordField("Password",validators=[DataRequired(),equal_to('password_hash2', message='Password have to match!')])
     password_hash2 = PasswordField("Confirm password", validators=[DataRequired()])
@@ -84,11 +87,31 @@ class PostForm(FlaskForm):
     submit = SubmitField('Submit')
 #
 
+# Create login Class
+class LoginForm(FlaskForm):
+    username = StringField("Username", validators=[DataRequired()])
+    password = PasswordField("Password", validators=[DataRequired()])
+    submit = SubmitField('Submit')
+#
+
 #JSON
 @app.route('/date')
 def getdate():
     return {"Date": date.today()}
 #
+
+
+
+#Login Stuff
+loginmanager = LoginManager()
+loginmanager.init_app(app)
+loginmanager.login_view = 'login'
+
+@loginmanager.user_loader
+def load_user(userid):
+    return Users.query.get(int(userid))
+#
+
 
 
 ## ROUTES AND CONTROLLERS BELlOW
@@ -98,6 +121,43 @@ def getdate():
 @app.route('/')
 def index():
     return render_template("index.html")
+
+#
+
+#Login page
+@app.route('/login', methods=['GET','POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = Users.query.filter_by(username = form.username.data).first()
+        if user:
+            #check the hash
+            if check_password_hash(user.password_hash, form.password.data):
+                login_user(user)
+                flash("Login successfull!")
+                return redirect(url_for('dashboard'))
+            else:
+                flash("Wrong password! Try again.")
+        else:
+            flash("Unexistent user.")
+    return render_template("login.html",form = form)
+#
+
+# Logout
+@app.route('/logout', methods=['GET','POST'])
+@login_required
+def logout():
+    logout_user()
+    flash("You have been logged out!")
+    return redirect(url_for('login'))
+#
+
+#Dashboard page
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    return render_template("dashboard.html")
+    
 #
 
 #Name page
@@ -122,6 +182,7 @@ def add_user():
         if user is None:
             hashedpasswd = generate_password_hash(form.password_hash.data, 'sha256')
             user = Users(name = form.name.data, 
+            username = form.username.data, 
             email = form.email.data, 
             password_hash = hashedpasswd, 
             favorite_color = form.favorite_color.data)
@@ -130,6 +191,7 @@ def add_user():
             db.session.commit()
 
         name = form.name.data
+        form.username.data = ''
         form.name.data = ''
         form.email.data = ''
         form.email.favorite_color = ''
@@ -178,6 +240,7 @@ def delete(id:int):
 
 # Add post page
 @app.route('/add-post', methods=['GET','POST'])
+@login_required
 def add_post():
     form = PostForm()
 
@@ -204,6 +267,7 @@ def posts():
 #
 # Show individual postposts
 @app.route('/posts/<int:id>')
+@login_required
 def post(id):
     # grab all posts from the database
     post = Posts.query.get_or_404(id)

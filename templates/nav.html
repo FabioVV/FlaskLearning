@@ -1,4 +1,3 @@
-
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
       <a class="navbar-brand" href="{{ url_for('index') }}">Flasker Blog</a>
@@ -11,7 +10,10 @@
             <a class="nav-link active" aria-current="page" href="{{ url_for('posts') }}">Posts</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Your profile</a>
+            {%if current_user.is_authenticated%}
+            {%else%}
+              <a class="nav-link" href="{{url_for('login')}}">Login</a>
+            {%endif%}
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{url_for('add_post')}}">Create blog post</a>
@@ -21,10 +23,14 @@
               Account actions
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Action</a></li>
-              <li><a class="dropdown-item" href="#">Another action</a></li>
+              <li><a class="dropdown-item" href="{{url_for('dashboard')}}">Your dashboard</a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="{{url_for('add_user')}}">Add User</a></li>
+              {%if current_user.is_authenticated%}
+                <li><a class="dropdown-item" href="{{url_for('logout')}}">Logout</a></li>
+              {%else%}
+                <li><a class="dropdown-item" href="{{url_for('login')}}">Login</a></li>
+                <li><a class="dropdown-item" href="{{url_for('add_user')}}">Register</a></li>
+              {%endif%}
             </ul>
           </li>
         </ul>

@@ -8,6 +8,9 @@
     {{ form.name.label(class="form-label") }}
     {{ form.name(class="form-control") }}
 
+    {{ form.username.label(class="form-label") }}
+    {{ form.username(class="form-control") }}
+
     {{ form.email.label(class="form-label") }}
     {{ form.email(class="form-control") }}
 
@@ -30,6 +33,7 @@
         <th scope="col">#</th>
         <th scope="col">ID</th>
         <th scope="col">Name</th>
+        <th scope="col">Username</th>
         <th scope="col">Email</th>
         <th scope="col">Password</th>
         <th scope="col">Favorite color</th>
@@ -42,6 +46,7 @@
         <th scope="row">--</th>
         <td>{{ our_user.id }}</td>
         <td>{{ our_user.name }}</td>
+        <td>{{ our_user.username }}</td>
         <td>@{{ our_user.email }}</td>
         <td class="pass">{{ our_user.password_hash }}</td>
         <td>{{ our_user.favorite_color }}</td>
