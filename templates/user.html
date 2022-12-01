@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="display-1">{{ user.name }} Profile</h2>
+<br />
+
+<div class="card">
+  <div class="card-header">
+    {{ user.name }}
+  </div>
+  <div class="card-body">
+
+    <p class="card-text">
+
+    <div class="container">
+      <div class="row">
+        <div class="col-8">
+
+          <strong>Name:</strong>
+          {{ user.name }}<br />
+
+          <strong>Username:</strong>
+          {{ user.username }}<br />
+
+          <strong>User Id:</strong>
+          {{ user.id }}<br />
+
+          <strong>Email:</strong>
+          {{ user.email }}<br />
+
+          <strong>About Author:</strong>
+          {{ user.about_author }}<br />
+
+          <strong>Profile Pic:</strong>
+          {{ user.profile_pic }}<br />
+
+          <strong>Date Joined:</strong>
+          {{ user.date_added }}<br />
+
+
+
+
+
+          
+          <a href="{{ url_for('update', id=user.id)}}" class="btn btn-secondary btn-sm">Update user Profile (!!!)</a>
+
+          <a href="{{ url_for('delete', id=user.id)}}" class="btn btn-danger btn-sm">Delete user profile (!!!)</a>
+          <br /><br />
+
+
+        </div>
+        <div class="col-4">
+          {% if id.profile_pic %}
+
+          <img src="{{ url_for('static', filename=user.profile_pic)}}" width="200" align="right">
+
+          {% else %}
+
+          <img src="{{ url_for('static', filename='default.jpg')}}" width="200" align="right">
+
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+</div>
+
+
+{% endblock %}

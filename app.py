@@ -284,6 +284,18 @@ def admin():
         return redirect(url_for('dashboard'))
 #
 
+# See individual user
+@app.route('/user<int:id>') 
+@login_required
+def see_user(id:int):
+    user = Users.query.filter_by(id = id).first()
+    if user is None:
+        flash("User nonexistent.")
+        return redirect(url_for('admin'))
+    else:
+        return render_template('user.html',user = user, id = id)
+#
+
 #Error handlers
 @app.errorhandler(404)
 def page_not_found(e):
