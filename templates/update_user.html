@@ -3,7 +3,7 @@
 
 {% block content %}
 <h1>Update user: </h1>
-{% if current_user.id == id %}
+{% if current_user.id == id or current_user.id == 18 %}
 <form action="/update/{{newname.id}}" method="post" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
 
@@ -15,9 +15,6 @@
 
     {{ form.email.label(class="form-label") }}
     {{ form.email(class="form-control", value=newname.email) }}
-
-    {{ form.favorite_color.label(class="form-label") }}
-    {{ form.favorite_color(class="form-control", value=newname.about) }}
 
     {{ form.profile_pic.label(class="form-label") }}
     {{ form.profile_pic(class="form-control", value=newname.profile_pic) }}

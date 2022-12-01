@@ -1,33 +1,75 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Dashboard</h1>
-<hr>
 
-<div class="card" style="width: 18rem;">
-    {% if current_user.profile_pic %}
-    <img src="{{url_for('static',filename='current_user.profile_pic')}}" class="card-img-top" alt="Profile image">
-    {% else %}
-    <img src="{{url_for('static',filename='default.jpg')}}" class="card-img-top" alt="Profile image">
-    {% endif %}
-    <div class="card-body">
-      <h5 class="card-title">{{current_user.name}}</h5>
-      <p class="card-text">Your user information.</p>
-    </div>
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item"><strong>Username:</strong> {{current_user.username}}</li>
-      <li class="list-group-item"><strong>Email:</strong> {{current_user.email}}</li>
-      <li class="list-group-item"><strong>User id:</strong> {{current_user.id}}</li>
-      <li class="list-group-item"><strong>About this user:</strong> {{current_user.about}}</li>
-      <li class="list-group-item"><strong>Date Joined:</strong> {{current_user.date_added}}</li>
-      <hr>
-      <li class="list-group-item"><strong>Profile image: </strong> {{current_user.profile_pic}}</li>
-    </ul>
+<h2>Dashboard</h2>
+<br />
+
+<div class="card">
+  <div class="card-header">
+    {{ current_user.name }}
   </div>
+  <div class="card-body">
 
-  <a class="btn btn-danger" href="{{url_for('delete',id = current_user.id)}}">Delete your profile</a>
-  <a class="btn btn-warning" href="{{url_for('update',id = current_user.id)}}">Update your profile info</a>
-<hr>
+    <p class="card-text">
+
+    <div class="container">
+      <div class="row">
+        <div class="col-8">
+
+          <strong>Name:</strong>
+          {{ current_user.name }}<br />
+
+          <strong>Username:</strong>
+          {{ current_user.username }}<br />
+
+          <strong>User Id:</strong>
+          {{ current_user.id }}<br />
+
+          <strong>Email:</strong>
+          {{ current_user.email }}<br />
+
+          <strong>About Author:</strong>
+          {{ current_user.about_author }}<br />
+
+          <strong>Profile Pic:</strong>
+          {{ current_user.profile_pic }}<br />
+
+          <strong>Date Joined:</strong>
+          {{ current_user.date_added }}<br />
+
+
+
+
+
+          </p>
+          <a href="{{ url_for('logout')}}" class="btn btn-secondary btn-sm">Logout</a>
+
+          <a href="{{ url_for('update', id=current_user.id)}}" class="btn btn-secondary btn-sm">Update your Profile</a>
+
+          <a href="{{ url_for('delete', id=current_user.id)}}" class="btn btn-danger btn-sm">Delete your profile</a>
+          <br /><br />
+
+
+        </div>
+        <div class="col-4">
+          {% if current_user.profile_pic %}
+
+          <img src="{{ url_for('static', filename=current_user.profile_pic)}}" width="200" align="right">
+
+          {% else %}
+
+          <img src="{{ url_for('static', filename='default.jpg')}}" width="200" align="right">
+
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+</div>
 
 
 {% endblock %}

@@ -1,4 +1,4 @@
-from flask import (Flask, flash, redirect, render_template, request, session, url_for)
+from flask import (Flask, flash, redirect, render_template, request, url_for)
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import uuid as uuid
@@ -84,19 +84,6 @@ def logout():
 @login_required
 def dashboard():
     return render_template("dashboard.html")
-    
-#
-
-#Name page
-@app.route('/name', methods=['GET', 'POST'])
-def name():
-    name = None
-    form = NamerForm()
-    if form.validate_on_submit():
-        name = form.name.data
-        form.name.data = ''
-        flash("Form submitted Succesfully!")
-    return render_template('name.html',name = name, form = form)
 #
 
 #Add user
@@ -111,8 +98,7 @@ def add_user():
             user = Users(name = form.name.data, 
             username = form.username.data, 
             email = form.email.data, 
-            password_hash = hashedpasswd, 
-            favorite_color = form.favorite_color.data)
+            password_hash = hashedpasswd)
 
             db.session.add(user)
             db.session.commit()
@@ -121,7 +107,6 @@ def add_user():
         form.username.data = ''
         form.name.data = ''
         form.email.data = ''
-        form.email.favorite_color = ''
         form.password_hash = ''
         flash("User created!")
     our_users = Users.query.order_by(Users.date_added)
@@ -139,25 +124,30 @@ def update(id:int):
         newname.name = request.form['name']
         newname.email = request.form['email']
         newname.username = request.form['username']
-        newname.favorite_color = request.form['favorite_color']
         newname.about = request.form['about']
         newname.profile_pic = request.files['profile_pic']
-      
-        #Grab image name
-        picfilename = secure_filename(newname.profile_pic.filename)
-        # set uuid
-        picname = str(uuid.uuid1()) + "_" + picfilename
-        newname.profile_pic = picname
-        #SAVE IMAGE
-        saver = request.files['profile_pic']
-        
-        try:
+
+        #check for profile pic
+        if request.files['profile_pic']:
+            #Grab image name
+            picfilename = secure_filename(newname.profile_pic.filename)
+            # set uuid
+            picname = str(uuid.uuid1()) + "_" + picfilename
+            newname.profile_pic = picname
+            #SAVE IMAGE
+            saver = request.files['profile_pic']
+            
+            try:
+                db.session.commit()
+                saver.save(os.path.join(app.config['UPLOAD_FOLDER'], picname))
+                flash("User updated successfully!")
+                return render_template("update_user.html",form = form, newname = newname, id = id)
+            except:
+                flash("User not updated! (Error)")
+                return render_template("update_user.html",form = form, newname = newname, id = id)
+        else:
             db.session.commit()
-            saver.save(os.path.join(app.config['UPLOAD_FOLDER'], picname))
             flash("User updated successfully!")
-            return render_template("update_user.html",form = form, newname = newname, id = id)
-        except:
-            flash("User not updated! (Error)")
             return render_template("update_user.html",form = form, newname = newname, id = id)
     else:
         return render_template("update_user.html",form = form, newname = newname, id = id)
@@ -168,7 +158,7 @@ def update(id:int):
 @login_required
 def delete(id:int):
     usertodelete = Users.query.get_or_404(id)
-    if current_user.id == id:
+    if current_user.id == usertodelete.id or current_user.id == 18:
         try:
             db.session.delete(usertodelete)
             db.session.commit()
@@ -226,7 +216,7 @@ def post(id):
 def edit_post(id):
     post = Posts.query.get_or_404(id) 
     form = PostForm()
-    if current_user.id == post.poster.id:
+    if current_user.id == post.poster.id or current_user.id == 18:
         if form.validate_on_submit():
             post.title = form.title.data
             post.content = form.content.data
@@ -252,7 +242,7 @@ def edit_post(id):
 @login_required
 def post_delete(id):
     posttodelete = Posts.query.get_or_404(id)
-    if current_user.id == posttodelete.poster.id:
+    if current_user.id == posttodelete.poster.id or current_user.id == 18:
         try:
             db.session.delete(posttodelete)
             db.session.commit()
@@ -326,7 +316,6 @@ class Users(db.Model, UserMixin):
     username = db.Column(db.String(20), nullable=False, unique=True)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), nullable=False, unique = True)
-    favorite_color = db.Column(db.String(120))
     about = db.Column(db.Text(75),nullable=True)
     password_hash = db.Column(db.String(128))
     profile_pic = db.Column(db.String(300), nullable=True)
