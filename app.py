@@ -92,8 +92,9 @@ def add_user():
     name = None
     form = UserForm()
     if form.validate_on_submit():
-        user = Users.query.filter_by(email = form.email.data).first()
-        if user is None:
+        usere = Users.query.filter_by(email = form.email.data).first()
+        usernam = Users.query.filter_by(username = form.username.data).first()
+        if usere is None and usernam is None:
             hashedpasswd = generate_password_hash(form.password_hash.data, 'sha256')
             user = Users(name = form.name.data, 
             username = form.username.data, 
@@ -108,9 +109,11 @@ def add_user():
         form.name.data = ''
         form.email.data = ''
         form.password_hash = ''
-        flash("User created!")
-    our_users = Users.query.order_by(Users.date_added)
-    return render_template("add_user.html",form = form, name = name, our_users = our_users)
+        
+        flash("You registered yourself successfully!")
+        return redirect(url_for('login'))
+    return render_template('add_user.html', form = form, name = name)
+    
 #
 
 #Update user
@@ -163,10 +166,10 @@ def delete(id:int):
             db.session.delete(usertodelete)
             db.session.commit()
             flash("User deleted successfully!")
-            return redirect(url_for("add_user"))
+            return redirect(url_for("admin"))
         except:
             flash("User not deleted (Error)")
-            return redirect(url_for("add_user"))
+            return redirect(url_for("admin"))
     else:
         flash("User not deleted (Unauthorized action)")
         return redirect(url_for("dashboard"))
