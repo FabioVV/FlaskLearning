@@ -8,7 +8,7 @@
     <div class="postcontent">
         <h3 class="display-4" >{{post.title}}</h3>
         <hr>
-        <p>{{post.content}}</p>
+        <p>{{post.content|safe}}</p>
         <sub style="display: none;"></sub>
         <sub>{{post.name}}</sub>
         <sub>{{post.data_posted}}</sub>
