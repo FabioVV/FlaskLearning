@@ -269,6 +269,9 @@ def search():
         post_s = post_s.filter(Posts.content.like('%' + post_searched + '%'))
         post_s = post_s.order_by(Posts.title).all()
         return render_template("search.html", searched = post_s)
+    else:
+        flash("You need to type something.")
+        return redirect(url_for('index'))
 #
 
 # Admin function

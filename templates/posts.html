@@ -6,9 +6,9 @@
 {%for p in posts%}
 <div class="shadow p-3 mb-5 bg-body" id="posts">
     <div class="postcontent">
-        <h3 class="display-4" >{{p.title}}</h3>
+        <h3 class="display-4" id="code">{{p.title}}</h3>
         <hr>
-        <p>{{p.content|safe}}</p>
+        <p id="content">{{p.content|safe}}</p>
         <sub style="display: none;">{{p.slug}}</sub>
         <sub >By: {{p.poster.name}}</sub>
         <sub >Posted on: {{p.date_posted}}</sub>
