@@ -33,5 +33,5 @@ MySql database
 
 # Migration
 flask db init
-flask db migration -m "message"
+flask db migrate -m "message"
 flask db upgrade
