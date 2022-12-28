@@ -128,10 +128,10 @@ def update(id:int):
         newname.email = request.form['email']
         newname.username = request.form['username']
         newname.about = request.form['about']
-        newname.profile_pic = request.files['profile_pic']
-
+    
         #check for profile pic
         if request.files['profile_pic']:
+            newname.profile_pic = request.files['profile_pic']
             #Grab image name
             picfilename = secure_filename(newname.profile_pic.filename)
             # set uuid
@@ -177,6 +177,7 @@ def delete(id:int):
 
 # Show all posts
 @app.route('/posts')
+@login_required
 def posts():
     # grab all posts from the database
     posts = Posts.query.order_by(Posts.date_posted)   
@@ -356,4 +357,4 @@ class Users(db.Model, UserMixin):
         return '<Name %r>' % self.name
 #
 if __name__ == "__main__":
-    app.run("0.0.0.0", port=5002, debug=True)
+    app.run("0.0.0.0", port=5001, debug=True)
