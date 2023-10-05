@@ -17,7 +17,7 @@ ckeditor = CKEditor(app)
 app.secret_key = "supersecretkey"
 #SQLITE database
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:guerra998@localhost/users'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:senha@localhost/users'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 UPLOAD_FOLDER = 'static'
